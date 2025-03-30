@@ -1,17 +1,76 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 
-struct linkedlist_node
+struct node
 {
     int value;
-    struct linkedlist_node* next;
+    struct node* next;
 };
 
-typedef struct linkedlist_node linkedlist_node_t;
+typedef struct node node_t;
 
 
-void print_linkedlist(linkedlist_node_t *head) {
-    linkedlist_node_t *current_node = head;
+
+node_t *create_new_node(int value) {
+    node_t *result = malloc(sizeof(node_t));
+    result->value = value;
+    result->next = NULL;
+    return result;  
+}
+
+
+node_t *add_new_node(node_t *pre_node,int value) {
+    node_t *new_node = create_new_node(value);
+    if (pre_node->next != NULL) {
+        new_node->next = pre_node->next;
+    }
+    pre_node->next = new_node;
+    return new_node;
+}
+
+
+node_t *find_node_by_value(int value,node_t *head) {
+    node_t *temp = head;
+    while (temp->next != NULL)
+    {
+        if (temp->value == value) return temp;
+        temp = temp->next;
+    }
+    return NULL;
+    
+}
+
+
+void delete_node(node_t **head, int value) {
+    node_t *founded_node = find_node_by_value(value,*head);
+
+    if (founded_node == *head) {
+        *head = founded_node->next;
+        free(founded_node);
+    
+    } 
+    else  {
+        node_t *temp = *head;
+        node_t *prev;
+        while (temp != NULL && temp->value != value)
+        {
+            prev = temp;
+            temp = temp->next;
+            /* code */
+        }
+        prev->next = founded_node->next;
+        free(founded_node);
+        
+
+    }
+    
+}
+
+
+
+void print_linkedlist(node_t *head) {
+    node_t *current_node = head;
 
     while (current_node != NULL)
     {
@@ -19,27 +78,36 @@ void print_linkedlist(linkedlist_node_t *head) {
         current_node = current_node->next;
     }
     printf("\n");
-     
 }
 
+
 int main(void)
-{
+{   
 
-    linkedlist_node_t n1, n2, n3 ;
-    linkedlist_node_t *head;
-
-    n1.value = 20;
-    n2.value = 30;
-    n3.value = 40;
+    node_t *head = create_new_node(0);
+    node_t *temp = head;
 
 
-    head = &n1;
-    n1.next = &n2;
-    n2.next = &n3;
-    n3.next = NULL;
 
+    for (int i = 1; i < 50; i++)
+    {
+        temp = add_new_node(temp,i);
+    }
+    
+    node_t *test_find_one = find_node_by_value(45,head);
+
+    
+    printf("test_find_one:  %d \n",test_find_one->value);
 
     print_linkedlist(head);
+
+    delete_node(&head,0);
+    delete_node(&head,1);
+    delete_node(&head,2);
+    delete_node(&head,5);
+
+    print_linkedlist(head);
+
 
 
     return 0;  
